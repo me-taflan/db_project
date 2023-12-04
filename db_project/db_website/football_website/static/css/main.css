@@ -1,0 +1,21 @@
+.title {
+    text-align: left;
+}
+
+
+.container-league{
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    width: 50%;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    background-color: rgb(255, 255, 255) ;
+    margin-bottom: 1rem;
+    padding: 1rem 1rem ;
+}
+
+.match-of-day{
+    display: flex;
+    justify-content: space-between;
+}
+

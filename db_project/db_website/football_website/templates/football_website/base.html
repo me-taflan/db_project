@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/main.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-div">
+        <ul class="nav">
+          <li class="navBrand">EuroSoccer</li>
+          <li class="navlink"><a href="/">Home</a></li>
+          <li class="navlink dropdown">
+            <a>Leagues <i class="fa fa-caret-down"></i></a>
+            <div class="dropdown-content">
+              {% for league in leagues %}
+              <a href="/{{ league }}">{{ league }}</a>
+              {% endfor %}
+            </div>
+          </li>
+          <li class="navlink"><a href="/Players">Players</a></li>
+          <li class="navlink"><a href="/Matches">Matches</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div id="container">{% block content %} {% endblock %}</div>
+
+    {% for league, league_matches in matches_data.items() %}
+    <div class="container-league">
+      <div>{{ league }}</div>
+      <hr />
+      {% for match in league_matches %}
+      <div class="match-of-day">
+        <span>{{ match.date|date:"d/m/Y" }}</span>
+        <span
+          >{{ match.home_team_name }} {{ match.home_team_goal }} - {{match.away_team_goal }} {{ match.away_team_name }}</span
+        >
+        <span>Add favorites</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+
+    <script>
+      $(document).ready(function () {
+        $("[href]").each(function () {
+          if (this.href == window.location.href) {
+            $(this).addClass("active");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
