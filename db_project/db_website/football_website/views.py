@@ -42,12 +42,18 @@ def main_page(request):
             away_team_name=row[7],
             league_name=row[8]
         )
-        matches_by_league[row[8]].append(match)
-    for league_name, matches in matches_by_league.items():
-        print(league_name)
-        for match in matches:
-            print(match)
+        if row[8] not in matches_by_league:
+            matches_by_league[row[8]] = []
+        matches_by_league[row[8]].append(match) 
+    print(type(matches_by_league))
 
+    matches_by_league_2 = {
+    'Premier League': "jksadhfjklsa",
+    'La Liga': "kjasdfhadjsk",
+    'La Liga': "kjasdfhadjsk",
+    'La Liga': "kjasdfhadjsk",
+
+}
 
     leagues = [row[0] for row in rows]
     return render(request,'football_website/main.html',{'leagues':leagues, 'matches_data':matches_by_league})
