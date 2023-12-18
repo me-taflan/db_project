@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from django.contrib.auth import views as auth_views
 app_name = 'football_website'
 
 urlpatterns = [
@@ -8,5 +9,7 @@ urlpatterns = [
     path('league/<int:league_id>/', views.league_page, name='league_page'),
     path('team/<int:team_id>/', views.team_page, name='team_page'),
     path('Players/',views.player_page,name='player_page'),
-    path('Players/<int:player_id>/',views.player_info_page,name='player_info')
+    path('Players/<int:player_id>/',views.player_info_page,name='player_info'),
+    path('signup/',views.signup,name='signup'),
+    path('login/', views.LoginView, name='login'),
 ]
