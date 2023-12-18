@@ -1,0 +1,97 @@
+.single-match{
+    background-color: rgb(255, 255, 255);
+    margin: auto;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    padding: 2rem 2rem ;
+    width: 50%;
+    margin-top: 2rem;
+    list-style: none;
+}
+
+.top-info{
+    display: flex;
+    flex-direction:row;
+    justify-content: space-between;
+    border:4px solid rgb(153,177,197);
+    border-width: 0 0 2px 0;
+    
+}
+
+.score{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.mid-info{
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    font-size: 2rem;
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+}
+
+.mid-info > div{
+    flex:1;
+}
+
+.players{
+    display: flex;
+    flex-direction: row;
+}
+.players > div{
+    flex:1;
+    text-align: center;
+}
+
+
+.player{
+    padding: 0.5rem;
+}
+
+.odd-mid ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+
+.single-match .odd-mid li{
+    margin-right: 1rem;
+    display: inline-block;
+    border: 1px solid rgb(216,216,216);
+    padding: 0.3rem 3rem;
+}
+
+
+.odd-mid li span {
+    display: block;
+    text-align: center;
+}
+
+.odds-taraf{
+    font-size: 0.7rem;
+    color: rgba(0, 0, 0, 0.845);
+    margin-bottom: 0.5rem;
+}
+
+h3{
+    margin-bottom: 0.5rem;
+}
+
+.odd{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.single-match li {
+    padding: 1rem ;
+    margin-bottom: 20px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
+
+
+
+

@@ -1,0 +1,45 @@
+{% extends "football_website/base.html" %}
+{% load static %}
+{% block title %}EuroSoccer{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/league.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<div class="league-outer">
+    <h2>{{league.name}} -{{country_name}}</h2>
+      <hr />
+      <table class="team-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Team</th>
+                <th>W</th>
+                <th>D</th>
+                <th>L</th>
+                <th>F</th>
+                <th>A</th>
+                <th>Pts</th>
+                <th>Avg Pts</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for team in teams %}
+                <tr class="{% if forloop.counter|divisibleby:2 %}light-background{% else %}dark-background{% endif %}">
+                    <td>{{ forloop.counter }}</td>
+                    <td><a href="{% url 'football_website:team_page' team_id=team.id %}">{{ team.name }}</a></td>
+                    <td>{{ team.wins }}</td>
+                    <td>{{ team.draws }}</td>
+                    <td>{{ team.losses }}</td>
+                    <td>{{ team.goals_scored }}</td>
+                    <td>{{ team.goals_conceded }}</td>
+                    <td>{{ team.points }}</td>
+                    <td>{{ team.avg_points }}</td>
+                    <td><span>Add favorites</span></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

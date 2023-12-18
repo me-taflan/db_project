@@ -1,0 +1,161 @@
+{% extends "football_website/base.html" %}
+{% load static %}
+{% block title %}EuroSoccer{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/match.css' %}">
+{% endblock %}
+{% block content %}
+<div class="single-match">
+    <div class="top-info">
+        <div >{{ match_details.league_name }}</div>
+        <div>{{ match_details.season }}</div>
+        <div>{{ match_details.stage }}.Week</div>
+        <div>{{ match_details.date }}</div>
+    </div>
+    <div class="mid-info">
+        <div>{{match_details.home_name}}</div>
+        <div class="score">
+            <div>{{match_details.home_team_goal}}</div>
+            <div>-</div>
+            <div>{{match_details.away_team_goal}}</div>
+        </div>
+        <div>{{match_details.away_name}}</div>
+    </div>
+
+    <div class="players">
+        <div class="home-team-players">
+            {% for player_name in match_details.home_team_players%}
+            <div class="player">{{ player_name|default:"Unknown" }}</div>
+            {% endfor %}
+        </div>
+        <div></div>
+        <div class="away-team-players">
+            {% for player_name in match_details.away_team_players%}
+            <div class="player">{{ player_name|default:"Unknown" }}</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<ul class="single-match">
+    <h2>Odds</h2>
+    <li class="odd-inner">
+        <div >
+            <h3>B365</h3><hr>
+            <div class="odd-mid">
+                <ul>
+                    <li><span class="odds-taraf">1</span> <span>{{match_details.b365h}}</span></li>
+                    <li><span class="odds-taraf">X</span> <span>{{match_details.b365d}}</span></li>
+                    <li><span class="odds-taraf">2</span> <span>{{match_details.b365a}}</span></li>
+                </ul>
+            </div>
+        </div>
+    </li>
+
+    <li class="odd-inner">
+        <div >
+            <h3>IW</h3><hr>
+            <div class="odd-mid">
+                <ul>
+                    <li><span class="odds-taraf">1</span> <span>{{match_details.iwh}}</span></li>
+                    <li><span class="odds-taraf">X</span> <span>{{match_details.iwd}}</span></li>
+                    <li><span class="odds-taraf">2</span> <span>{{match_details.iwa}}</span></li>
+                </ul>
+            </div>
+        </div>
+    </li>
+
+    <li class="odd-inner">
+        <div >
+            <h3>LB</h3><hr>
+            <div class="odd-mid">
+                <ul>
+                    <li><span class="odds-taraf">1</span> <span>{{match_details.lbh}}</span></li>
+                    <li><span class="odds-taraf">X</span> <span>{{match_details.lbd}}</span></li>
+                    <li><span class="odds-taraf">2</span> <span>{{match_details.lba}}</span></li>
+                </ul>
+            </div>
+        </div>
+    </li>
+
+    <li class="odd-inner">
+        <div >
+            <h3>PS</h3><hr>
+            <div class="odd-mid">
+                <ul>
+                    <li><span class="odds-taraf">1</span> <span>{{match_details.psh}}</span></li>
+                    <li><span class="odds-taraf">X</span> <span>{{match_details.psd}}</span></li>
+                    <li><span class="odds-taraf">2</span> <span>{{match_details.psa}}</span></li>
+                </ul>
+            </div>
+        </div>
+    </li>
+
+    <li class="odd-inner">
+        <div >
+            <h3>WH</h3><hr>
+            <div class="odd-mid">
+                <ul>
+                    <li><span class="odds-taraf">1</span> <span>{{match_details.whh}}</span></li>
+                    <li><span class="odds-taraf">X</span> <span>{{match_details.whd}}</span></li>
+                    <li><span class="odds-taraf">2</span> <span>{{match_details.wha}}</span></li>
+                </ul>
+            </div>
+        </div>
+    </li>
+
+    <li class="odd-inner">
+        <div >
+            <h3>SJ</h3><hr>
+            <div class="odd-mid">
+                <ul>
+                    <li><span class="odds-taraf">1</span> <span>{{match_details.sjh}}</span></li>
+                    <li><span class="odds-taraf">X</span> <span>{{match_details.sjd}}</span></li>
+                    <li><span class="odds-taraf">2</span> <span>{{match_details.sja}}</span></li>
+                </ul>
+            </div>
+        </div>
+    </li>
+
+    <li class="odd-inner">
+        <div >
+            <h3>VC</h3><hr>
+            <div class="odd-mid">
+                <ul>
+                    <li><span class="odds-taraf">1</span> <span>{{match_details.vch}}</span></li>
+                    <li><span class="odds-taraf">X</span> <span>{{match_details.vcd}}</span></li>
+                    <li><span class="odds-taraf">2</span> <span>{{match_details.vca}}</span></li>
+                </ul>
+            </div>
+        </div>
+    </li>
+
+    <li class="odd-inner">
+        <div >
+            <h3>GB</h3><hr>
+            <div class="odd-mid">
+                <ul>
+                    <li><span class="odds-taraf">1</span> <span>{{match_details.gbh}}</span></li>
+                    <li><span class="odds-taraf">X</span> <span>{{match_details.gbd}}</span></li>
+                    <li><span class="odds-taraf">2</span> <span>{{match_details.gba}}</span></li>
+                </ul>
+            </div>
+        </div>
+    </li>
+
+    <li class="odd-inner">
+        <div >
+            <h3>BS</h3><hr>
+            <div class="odd-mid">
+                <ul>
+                    <li><span class="odds-taraf">1</span> <span>{{match_details.bsh}}</span></li>
+                    <li><span class="odds-taraf">X</span> <span>{{match_details.bsd}}</span></li>
+                    <li><span class="odds-taraf">2</span> <span>{{match_details.bsa}}</span></li>
+                </ul>
+            </div>
+        </div>
+    </li>
+</ul>
+
+
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "football_website/base.html" %}
+{% load static %}
+{% block title %}EuroSoccer{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/team.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<div class="team-name">
+      <hr />
+      {% for match in matches %}
+        <div
+          class="match {% if forloop.counter|divisibleby:2 %}dark-background{% else %}light-background{% endif %}">
+          <span>{{ match.date|date:"d/m/Y" }}</span>
+          <span class="score_parent">
+            <span class="home_team">{{ match.home_team_name }} </span>
+            <a
+        href= "{% url 'football_website:match_page' match_id=match.match_id %}"
+        class= "match-link">
+            <span class="score">
+              {{ match.home_team_goal }} - {{match.away_team_goal }}</span
+            >
+        </a>
+            <span class="away_team">{{ match.away_team_name }}</span>
+          </span>
+          <span>Add favorites</span>
+        </div>
+      
+      {% endfor %}
+    </div>
+      
+      
+{% endblock %}
