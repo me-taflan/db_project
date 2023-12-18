@@ -1,6 +1,16 @@
 from django.shortcuts import render
 from django.db import connection
 from collections import defaultdict
+#from django.contrib.auth import login
+#from django.contrib.auth import views as auth_views
+from .forms import UserCreationForm
+from django.shortcuts import redirect, render
+from django.views.generic import CreateView
+from .forms import LoginForm,SignUpForm
+from django.contrib.auth import views as auth_views
+#from django.contrib.auth.decorators import login_required
+from django.urls import reverse
+
 
 class MatchData:
     def __init__(self, match_id, date, season, stage,home_team_goal,away_team_goal, home_team_name, away_team_name,league_name):
@@ -67,7 +77,81 @@ class Player_info:
         self.gk_kicking=gk_kicking
         self.gk_positioning=gk_positioning
         self.gk_reflexes=gk_reflexes
+        
+        
 
+
+def LoginView(request):
+    matches_query = '''select m.id , m.date , m. season , m.stage ,m.home_team_goal,m.away_team_goal, t1.team_long_name , t2.team_long_name ,l.name
+    from matches m join team t1 on m.home_team_api_id = t1.team_api_id 
+    join team t2 on m.away_team_api_id = t2.team_api_id 
+    join league l on l.id = m.league_id
+    where day(current_date) = day(m.date) and month(current_date) = month(m.date);'''
+
+
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT name FROM league")
+        rows = cursor.fetchall()
+        cursor.execute(matches_query)
+        match_rows = cursor.fetchall()
+
+    matches_by_league = {}
+    for row in match_rows:
+        match = MatchData(
+            match_id=row[0],
+            date=row[1],
+            season=row[2],
+            stage=row[3],
+            home_team_goal=row[4],
+            away_team_goal=row[5],
+            home_team_name=row[6],
+            away_team_name=row[7],
+            league_name=row[8]
+        )
+        if row[8] not in matches_by_league:
+            matches_by_league[row[8]] = []
+        matches_by_league[row[8]].append(match) 
+    print(type(matches_by_league))
+
+    leagues = [row[0] for row in rows]
+    login_checker=False
+    if request.method == 'POST':
+        form=LoginForm(request.POST)
+        if form.is_valid():
+            username=form.cleaned_data['username']
+            password=form.cleaned_data['password']
+            auth_query='''SELECT * FROM auth_user WHERE username = %s AND password =%s'''
+            with connection.cursor() as cursor:
+                cursor.execute(auth_query,([username],[password]))
+                user=cursor.fetchone()
+            if user is not None:
+                login_checker=True
+                return render(request,'football_website/main.html',{'leagues':leagues, 'matches_data':matches_by_league,'login_checker':login_checker, 'username':username})
+            else:
+                return redirect('football_website:login')
+    else:
+       # GET request or form is invalid
+       form = LoginForm()
+       return render(request, 'registration/login.html', {'form': form})
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            username=form.cleaned_data['username']
+            email=form.cleaned_data['email']
+            password=form.cleaned_data['password1']
+            user_creation_query='''INSERT INTO auth_user (username, email, password,is_superuser,first_name,last_name,is_staff,is_active,date_joined)
+            VALUES (%s, %s, %s,%s,'null','null',0,1,CURRENT_TIMESTAMP);
+             '''
+            with connection.cursor() as cursor:
+                cursor.execute(user_creation_query,([username],[email],[password],[0]))
+            
+            return redirect('football_website:main_page')  # Replace 'home' with the desired redirect path after signup
+    else:
+        form = SignUpForm()
+    return render(request, 'registration/signup.html', {'form': form})
+
+#@login_required
 def main_page(request):
     matches_query = '''select m.id , m.date , m. season , m.stage ,m.home_team_goal,m.away_team_goal, t1.team_long_name , t2.team_long_name ,l.name
     from matches m join team t1 on m.home_team_api_id = t1.team_api_id 
@@ -100,18 +184,11 @@ def main_page(request):
         matches_by_league[row[8]].append(match) 
     print(type(matches_by_league))
 
-    matches_by_league_2 = {
-    'Premier League': "jksadhfjklsa",
-    'La Liga': "kjasdfhadjsk",
-    'La Liga': "kjasdfhadjsk",
-    'La Liga': "kjasdfhadjsk",
-
-}
-
     leagues = [row[0] for row in rows]
     return render(request,'football_website/main.html',{'leagues':leagues, 'matches_data':matches_by_league})
 
 
+#@login_required
 def today_born_players():
     player_query='''select id,player_name,player_fifa_api_id,date(player.birthday) as birthday from player where
     day(current_date) = day(player.birthday) and month(current_date) = month(player.birthday); '''
@@ -134,7 +211,7 @@ def today_born_players():
         player_data.append(player)
     return player_data
     
-    
+#@login_required
 def search_players_by_name(name):
     with connection.cursor() as cursor:
         query = "SELECT * FROM player WHERE player_name LIKE %s"
@@ -154,7 +231,7 @@ def search_players_by_name(name):
         player_data.append(player)
     return player_data
 
-
+#@login_required
 def player_page(request):
     if 'search' in request.GET:
         search_query = request.GET['search']
@@ -164,7 +241,7 @@ def player_page(request):
         players = today_born_players()
         return render(request, 'football_website/player_page.html', {'players': players})
     
-    
+#@login_required
 def player_info_page(request,player_id):
     with connection.cursor() as cursor:
         player_query='''SELECT pa.*
@@ -174,49 +251,58 @@ def player_info_page(request,player_id):
          '''
         cursor.execute(player_query,[player_id])
         player_data=cursor.fetchall()
+        new_query='''select upper(player_name) from player where id=%s;'''
+        cursor.execute(new_query,[ player_id ])
+        player_name=cursor.fetchone()
         
+    player_info=[]
+    for row in player_data:
+        player_attr=Player_info(id=row[0],
+                                player_fifa_api_id=row[1],
+                                player_api_id=row[2],
+                                date=row[3],
+                                overall_rating=row[4],
+                                potential=row[5],
+                                preferred_foot=row[6],
+                                attacking_work_rate=row[7],
+                                defensive_work_rate=row[8],
+                                crossing=row[9],
+                                finishing=row[10],
+                                heading_accuracy=row[11],
+                                short_passing=row[12],
+                                volleys=row[13],
+                                dribbling=row[14],
+                                curve=row[15],
+                                free_kick_accuracy=row[16],
+                                long_passing=row[17],
+                                ball_control=row[18],
+                                acceleration=row[19],
+                                sprint_speed=row[20],
+                                agility=row[21],
+                                reactions=row[22],
+                                balance=row[23],
+                                shot_power=row[24],
+                                jumping=row[25],
+                                stamina=row[26],
+                                strength=row[27],
+                                long_shots=row[28],
+                                aggression=row[29],
+                                interceptions=row[30],
+                                positioning=row[31],
+                                vision=row[32],
+                                penalties=row[33],
+                                marking=row[34],
+                                standing_tackle=row[35],
+                                sliding_tackle=row[36],
+                                gk_diving=row[37],
+                                gk_handling=row[38],
+                                gk_kicking=row[39],
+                                gk_positioning=row[40],
+                                gk_reflexes=row[41])
+        player_info.append(player_attr)
     
-    player_info=Player_info(id=player_data[0][0],
-                            player_fifa_api_id=player_data[0][1],
-                            player_api_id=player_data[0][2],
-                            date=player_data[0][3],
-                            overall_rating=player_data[0][4],
-                            potential=player_data[0][5],
-                            preferred_foot=player_data[0][6],
-                            attacking_work_rate=player_data[0][7],
-                            defensive_work_rate=player_data[0][8],
-                            crossing=player_data[0][9],
-                            finishing=player_data[0][10],
-                            heading_accuracy=player_data[0][11],
-                            short_passing=player_data[0][12],
-                            volleys=player_data[0][13],
-                            dribbling=player_data[0][14],
-                            curve=player_data[0][15],
-                            free_kick_accuracy=player_data[0][16],
-                            long_passing=player_data[0][17],
-                            ball_control=player_data[0][18],
-                            acceleration=player_data[0][19],
-                            sprint_speed=player_data[0][20],
-                            agility=player_data[0][21],
-                            reactions=player_data[0][22],
-                            balance=player_data[0][23],
-                            shot_power=player_data[0][24],
-                            jumping=player_data[0][25],
-                            stamina=player_data[0][26],
-                            strength=player_data[0][27],
-                            long_shots=player_data[0][28],
-                            aggression=player_data[0][29],
-                            interceptions=player_data[0][30],
-                            positioning=player_data[0][31],
-                            vision=player_data[0][32],
-                            penalties=player_data[0][33],
-                            marking=player_data[0][34],
-                            standing_tackle=player_data[0][35],
-                            sliding_tackle=player_data[0][36],
-                            gk_diving=player_data[0][37],
-                            gk_handling=player_data[0][38],
-                            gk_kicking=player_data[0][39],
-                            gk_positioning=player_data[0][40],
-                            gk_reflexes=player_data[0][41])
-    print (player_info)
-    return render(request,'football_website/player_info.html',{'player_info':player_info})
+    return render(request,'football_website/player_info.html',{'player_info':player_info,'player_name':player_name})
+
+#@login_required
+#def league_page(request,league_id):
+    

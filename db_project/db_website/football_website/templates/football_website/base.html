@@ -23,12 +23,19 @@
             <a>Leagues <i class="fa fa-caret-down"></i></a>
             <div class="dropdown-content">
               {% for league in leagues %}
-              <a href="/{{ league }}">{{ league }}</a>
+              <a href=>{{ league }}</a>
               {% endfor %}
             </div>
           </li>
           <li class="navlink"><a href="/Players">Players</a></li>
           <li class="navlink"><a href="/Matches">Matches</a></li>
+          {% if not login_checker %}
+          <li style="float:right"><a class="active" href="/login">Login</a></li>
+          <li style="float:right"><a class="active" href="/signup">Signup</a></li>
+          {% elif login_checker  %} 
+          <li style="float:right">Welcome {{username}}</li>
+          <li style="float:right"><a class="active" href="/">Logout</a></li>
+          {%endif%}
         </ul>
       </div>
     </nav>
