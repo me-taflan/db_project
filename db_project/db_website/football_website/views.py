@@ -10,6 +10,7 @@ from .forms import LoginForm,SignUpForm
 from django.contrib.auth import views as auth_views
 #from django.contrib.auth.decorators import login_required
 from django.urls import reverse
+from django.http import JsonResponse 
 
 
 class MatchData:
@@ -100,6 +101,7 @@ def LoginView(request):
                 cursor.execute(auth_query,([username],[password]))
                 user=cursor.fetchone()
             if user is not None:
+                request.session['username']=username
                 login_checker=True
                 return redirect('football_website:main_page')
             else:
@@ -108,7 +110,14 @@ def LoginView(request):
        # GET request or form is invalid
        form = LoginForm()
        return render(request, 'registration/login.html', {'form': form})
-    
+
+
+def logout(request):
+    # Clear the relevant session data
+    request.session.pop('username', None)
+
+    # Redirect to the desired page after logout
+    return redirect('football_website:main_page')
 
 def signup(request):
     if request.method == 'POST':
@@ -137,6 +146,7 @@ def main_page(request):
 
 
     with connection.cursor() as cursor:
+        cursor.execute("SELECT id,name FROM league")
         cursor.execute("SELECT id,name FROM league")
         rows = cursor.fetchall()
         cursor.execute(matches_query)
@@ -468,6 +478,30 @@ def player_info_page(request,player_id):
     
     return render(request,'football_website/player_info.html',{'player_info':player_info,'player_name':player_name})
 
-#@login_required
-#def league_page(request,league_id):
+def add_favorite_match(request,match_id,username):
+    if 'username' in request.session:
+        user_query='''select id from auth_user where username=%s '''
+        query='''insert into favorite_matches(user_id,match_id) values(%s,%s)'''
+        with connection.cursor() as cursor:
+            cursor.execute(user_query,[username])
+            user_id=cursor.fetchone()
+            cursor.execute(query,([user_id],[match_id]))
+        return JsonResponse({'success': True,'match_id':match_id})
+    else:
+        return JsonResponse({'success': False, 'message': 'User is not authenticated'})
+    
+def add_favorite_team(request,team_id,username):
+    if 'username' in request.session:
+        user_query='''select id from auth_user where username=%s '''
+        query='''insert into favorite_teams(user_id,team_id) values(%s,%s)'''
+        with connection.cursor() as cursor:
+            cursor.execute(user_query,[username])
+            user_id=cursor.fetchone()
+            cursor.execute(query,([user_id],[team_id]))
+        return JsonResponse({'success': True,'team_id':team_id})
+    else:
+        return JsonResponse({'success': False, 'message': 'User is not authenticated'})
+    
+def fav_page(request,username):
+    match_select_query='''select * from favor '''
     

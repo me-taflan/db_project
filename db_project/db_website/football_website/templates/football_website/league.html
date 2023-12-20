@@ -37,9 +37,30 @@
                     <td>{{ team.goals_conceded }}</td>
                     <td>{{ team.points }}</td>
                     <td>{{ team.avg_points }}</td>
-                    <td><span>Add favorites</span></td>
+                    <td><button class="fav" data-team-id="{{ team.id }}">Add to Favorites</button></td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+  $(document).ready(function () {
+      $('.fav').click(function () {
+          var teamId = $(this).data('team-id');
+          var username = '{{ request.session.username }}';  // Assuming you set the username in the session
+          var url = '/add_favorite_team/' + teamId + '/' + username + '/';
+          $.post({
+              url: url,
+              data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
+              success: function () {
+                  alert('Team added to favorites!');
+                  // You can update the UI here if needed
+              },
+              error: function () {
+                  alert('Please login to add favorites.');
+              }
+          });
+      });
+  });
+</script>
 {% endblock %}

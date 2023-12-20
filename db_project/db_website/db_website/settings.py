@@ -63,7 +63,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'football_website.context_processors.leagues'
+                'football_website.context_processors.leagues',
+                'football_website.context_processors.login_status'
             ],
         },
     },
