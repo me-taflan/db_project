@@ -81,3 +81,12 @@
     text-decoration: underline;
 }
 
+#league-name {
+    text-decoration: none;
+    color:inherit;
+  }
+
+  #league-name:hover{
+    text-decoration: underline ;
+  }
+

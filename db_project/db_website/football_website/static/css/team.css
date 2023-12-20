@@ -1,14 +1,116 @@
 a{
     text-decoration: none;
 }
-
-.team-name{
+.outer{
     display: flex;
     flex-direction: column;
     margin: auto;
     width: 50%;
+}
+
+.outer > div{
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    background-color: rgb(255, 255, 255) ;
     margin-bottom: 1rem;
     padding: 1rem 1rem ;
 }
+
+.team-name{
+    background-color: rgb(31,128,209);
+    text-align: left;
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+
+.match {
+    padding: 0.5rem  1rem;
+    display: flex;
+    flex-direction: row;
+ }
+
+.match > div{
+    flex:1
+ }
+
+ #score_parent{
+    flex:3;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+}
+#score_parent > div{
+    flex:1;
+}
+
+#fav{
+    text-align: right;
+}
+
+#away_team{
+    text-align: right;
+}
+#score-outer{
+    text-align: center;
+}
+
+
+.light-background {
+    background-color: #ffffff; 
+}
+
+.dark-background {
+    background-color: rgb(245,245,245); 
+}
+
+.match-link{
+    text-decoration: none;
+    color:inherit;
+}
+
+.match-link:hover{
+    text-decoration: underline;
+}
+
+.match:hover{
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.win {
+    background-color: green;
+    color: white;
+    display: inline-block;
+  }
+
+  .draw {
+    background-color: gray;
+    color: white;
+    display: inline-block;
+  }
+
+  .lose {
+    background-color: red;
+    color: white;
+    display: inline-block;
+  }
+
+ #status{
+    flex:0.3;
+    padding:0.3rem;
+    text-align: center;
+    margin-left:1rem;
+    margin-right:0.5rem;
+  }
+
+  .favorite-btn{
+    padding:0rem 0.5rem;
+  }
+
+  #league-name {
+    text-decoration: none;
+    color:inherit;
+  }
+
+  #league-name:hover{
+    text-decoration: underline ;
+  }

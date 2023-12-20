@@ -13,7 +13,7 @@ from django.urls import reverse
 
 
 class MatchData:
-    def __init__(self, match_id, date, season, stage,home_team_goal,away_team_goal, home_team_name, away_team_name,league_name=None,home_id=None,away_id=None,):
+    def __init__(self, match_id, date, season, stage,home_team_goal,away_team_goal, home_team_name, away_team_name,league_name=None,league_id=None,home_id=None,away_id=None,team_pos=None):
         self.match_id = match_id
         self.date = date
         self.season = season
@@ -23,8 +23,10 @@ class MatchData:
         self.home_team_name = home_team_name
         self.away_team_name = away_team_name
         self.league_name = league_name
+        self.league_id = league_id
         self.home_id = home_id
         self.away_id = away_id
+        self.team_pos = team_pos
 class LeagueData:
     def __init__(self,sid,name):
         self.id = sid
@@ -86,7 +88,6 @@ class Player_info:
         
         
 
-
 def LoginView(request):
     login_checker=False
     if request.method == 'POST':
@@ -129,9 +130,10 @@ def signup(request):
 
 #@login_required
 def main_page(request):
-    matches_query = '''SELECT m.id , m.date , m. season , m.stage ,m.home_team_goal,m.away_team_goal, t1.team_long_name , t2.team_long_name ,l.name, t1.team_api_id, t2.team_api_id, m.league_id FROM matches m join team t1 on m.home_team_api_id = t1.team_api_id JOIN team t2 on m.away_team_api_id = t2.team_api_id 
+    matches_query = '''SELECT m.id , m.date , m. season , m.stage ,m.home_team_goal,m.away_team_goal, t1.team_long_name , t2.team_long_name ,l.name , l.id , t1.team_api_id, t2.team_api_id, m.league_id FROM matches m join team t1 on m.home_team_api_id = t1.team_api_id JOIN team t2 on m.away_team_api_id = t2.team_api_id 
     JOIN league l on l.id = m.league_id
     WHERE day(current_date) = day(m.date) AND month(current_date) = month(m.date);'''
+
 
 
     with connection.cursor() as cursor:
@@ -152,14 +154,16 @@ def main_page(request):
             home_team_name=row[6],
             away_team_name=row[7],
             league_name=row[8],
-            home_id=row[9],
-            away_id=row[10]
+            league_id=row[9],
+            home_id=row[10],
+            away_id=row[11],
         )
-        if row[8] not in matches_by_league:
-            matches_by_league[row[8]] = []
-        matches_by_league[row[8]].append(match) 
+        league_key = (row[9], row[8])
+        if league_key not in matches_by_league:
+            matches_by_league[league_key] = []
+        matches_by_league[league_key].append(match) 
+    print(matches_by_league)
 
-    leagues = [LeagueData(row[0],row[1]) for row in rows]
     return render(request,'football_website/main.html',{ 'matches_data':matches_by_league})
 
 
@@ -308,12 +312,28 @@ def league_page(request,league_id):
 
 
 def team_page(request,team_id):
+    
     # Get all matches and extract some stats for the current team
-    query = f'''SELECT m.id , m.date , m. season , m.stage ,m.home_team_goal, m.away_team_goal, t1.team_long_name , t2.team_long_name FROM matches m JOIN team t1 ON m.home_team_api_id = t1.team_api_id JOIN team t2 ON m.away_team_api_id = t2.team_api_id  WHERE m.home_team_api_id = {team_id} OR m.away_team_api_id = {team_id};'''
+    query = f'''SELECT m.id , m.date , m. season , m.stage ,m.home_team_goal, m.away_team_goal, t1.team_long_name , t2.team_long_name,t1.team_api_id, t2.team_api_id , CASE WHEN m.home_team_api_id = {team_id} THEN 1 WHEN m.away_team_api_id = {team_id} THEN 2 END AS team_pos FROM matches m JOIN team t1 ON m.home_team_api_id = t1.team_api_id JOIN team t2 ON m.away_team_api_id = t2.team_api_id  WHERE m.home_team_api_id = {team_id} OR m.away_team_api_id = {team_id};'''
+
+    # Need to extract some statistics
+    # Team Players
+    player_columns_home = [f'home_player_{i}' for i in range(1, 12)]
+    player_columns_away = [f'away_player_{i}' for i in range(1, 12)]
+
+    player_joins_home = ' '.join([f'LEFT JOIN player h_p_{i} ON h_p_{i}.player_api_id = matches.{col}' for i,col in enumerate(player_columns_home,1)])
+    player_joins_away = ' '.join([f'LEFT JOIN player a_p_{i} ON a_p_{i}.player_api_id = matches.{col}' for i,col in enumerate(player_columns_away,1)])
+
+    players_query = 'SELECT player.player_api_id , COUNT(*) AS total_appearances FROM matches m '\
+    f'{player_joins_home} '\
+    f'{player_joins_away} '\
+    f' WHERE m.home_team_api_id = {team_id} '\
+    f' OR m.away_team_api_id = {team_id} GROUP BY players.player_id, players.player_name; '
+
     with connection.cursor() as cursor:
         cursor.execute(query)
         rows = cursor.fetchall()
-    print(rows)
+        
     matches = []
     for row in rows:
         match = MatchData(
@@ -324,7 +344,11 @@ def team_page(request,team_id):
             home_team_goal=row[4],
             away_team_goal=row[5],
             home_team_name=row[6],
-            away_team_name=row[7],)
+            away_team_name=row[7],
+            home_id=row[8],
+            away_id=row[9],
+            team_pos=row[10],
+            )
         matches.append(match)    
     return render(request,'football_website/team.html',{'matches':matches})
 
