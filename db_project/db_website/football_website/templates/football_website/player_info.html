@@ -1,8 +1,11 @@
 <!DOCTYPE html>
+{% extends "football_website/base.html" %}
+{% block content %}
 <html>
     <head>
 
     </head>
+    
         <body>
             <h2 align="center">{{player_name.0}}</h2>
             <style>
@@ -24,19 +27,19 @@
                   </tr>
                   <tr>
                     
-                    <td align="center">player fifa_api id</td>
-                    <td align="center">overall rating</td>
-                    <td align="center">potential</td>
-                    <td align="center">preferred foot</td>
-                    <td align="center">attacking work rate</td>
-                    <td align="center">defensive work rate</td>
-                    <td align="center">crossing</td>
-                    <td align="center">finishing</td>
-                    <td align="center">heading accuracy</td>
-                    <td align="center">short passing</td>
-                    <td align="center">volleys</td>
-                    <td align="center">dribbling</td>
-                    <td align="center">curve</td>
+                    <td align="center">Player Fifa Api Id</td>
+                    <td align="center">Overall Rating</td>
+                    <td align="center">Potential</td>
+                    <td align="center">Preferred Foot</td>
+                    <td align="center">Attacking Work Rate</td>
+                    <td align="center">Defensive Work Rate</td>
+                    <td align="center">Crossing</td>
+                    <td align="center">Finishing</td>
+                    <td align="center">Heading Accuracy</td>
+                    <td align="center">Short Passing</td>
+                    <td align="center">Volleys</td>
+                    <td align="center">Dribbling</td>
+                    <td align="center">Curve</td>
                   </tr> 
                     <tr>
                     <td align="center">{{info.player_fifa_api_id}}</td>                     
@@ -55,19 +58,19 @@
                     
                     </tr>
                     <tr>
-                    <td align="center">free kick_accuracy</td>
-                    <td align="center">long passing</td>
-                    <td align="center">ball control</td>
-                    <td align="center">acceleration</td>
-                    <td align="center">sprint speed</td>
-                    <td align="center">agility</td>
-                    <td align="center">reactions</td>
-                    <td align="center">balance</td>
-                    <td align="center">shot power</td>
-                    <td align="center">jumping</td>
-                    <td align="center">stamina</td>
-                    <td align="center">strength</td>
-                    <td align="center">long shots</td>
+                    <td align="center">Free Kick Accuracy</td>
+                    <td align="center">Long Passing</td>
+                    <td align="center">Ball Control</td>
+                    <td align="center">Acceleration</td>
+                    <td align="center">Sprint Speed</td>
+                    <td align="center">Agility</td>
+                    <td align="center">Reactions</td>
+                    <td align="center">Balance</td>
+                    <td align="center">Shot Power</td>
+                    <td align="center">Jumping</td>
+                    <td align="center">Stamina</td>
+                    <td align="center">Strength</td>
+                    <td align="center">Long Shots</td>
                     </tr>
                     <tr>
                     <td align="center">{{info.free_kick_accuracy}}</td>
@@ -85,19 +88,19 @@
                     <td align="center">{{info.long_shots}}</td>
                     </tr>
                     <tr>
-                    <td align="center">aggression</td>
-                    <td align="center">interceptions</td>
-                    <td align="center">positioning</td>
-                    <td align="center">vision</td>
-                    <td align="center">penalties</td>
-                    <td align="center">marking</td>
-                    <td align="center">standing tackle</td>
-                    <td align="center">sliding tackle</td>
-                    <td align="center">gk diving</td>
-                    <td align="center">gk handling</td>
-                    <td align="center">gk kicking</td>
-                    <td align="center">gk positioning</td>
-                    <td align="center">gk reflexes</td>
+                    <td align="center">Aggression</td>
+                    <td align="center">Interceptions</td>
+                    <td align="center">Positioning</td>
+                    <td align="center">Vision</td>
+                    <td align="center">Penalties</td>
+                    <td align="center">Marking</td>
+                    <td align="center">Standing Tackle</td>
+                    <td align="center">Sliding Tackle</td>
+                    <td align="center">Gk Diving</td>
+                    <td align="center">Gk Handling</td>
+                    <td align="center">Gk Kicking</td>
+                    <td align="center">Gk Positioning</td>
+                    <td align="center">Gk Reflexes</td>
                     </tr>
                     <tr>
                     <td align="center">{{info.aggression}}</td>
@@ -125,4 +128,5 @@
               
 
         </body>
+        {%endblock%}
 </html>

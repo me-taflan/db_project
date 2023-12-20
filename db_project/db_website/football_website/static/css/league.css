@@ -1,0 +1,51 @@
+.light-background {
+    background-color: #ffffff; 
+}
+
+.dark-background {
+    background-color: rgb(245,245,245); 
+}
+
+.league-outer{
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    width: 50%;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    background-color: rgb(255, 255, 255) ;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem 1rem ;
+}
+
+.league-inner{
+    padding:1rem;
+}
+
+.team-table {
+    background-color: red;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.team-table th, .team-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.team-table th {
+    background-color: #f2f2f2;
+}
+
+td a {
+    color: inherit;
+}
+
+.team-table tr:hover {
+    background-color: #dcdcdc; 
+}
+
+.team-table a:hover {
+    text-decoration: underline;
+}
