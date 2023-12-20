@@ -115,7 +115,6 @@ def LoginView(request):
 def logout(request):
     # Clear the relevant session data
     request.session.pop('username', None)
-
     # Redirect to the desired page after logout
     return redirect('football_website:main_page')
 
@@ -147,7 +146,6 @@ def main_page(request):
 
     with connection.cursor() as cursor:
         cursor.execute("SELECT id,name FROM league")
-        cursor.execute("SELECT id,name FROM league")
         rows = cursor.fetchall()
         cursor.execute(matches_query)
         match_rows = cursor.fetchall()
@@ -172,8 +170,6 @@ def main_page(request):
         if league_key not in matches_by_league:
             matches_by_league[league_key] = []
         matches_by_league[league_key].append(match) 
-    print(matches_by_league)
-
     return render(request,'football_website/main.html',{ 'matches_data':matches_by_league})
 
 

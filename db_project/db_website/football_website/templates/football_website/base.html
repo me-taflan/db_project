@@ -30,39 +30,20 @@
             </div>
           </li>
           <li class="navlink"><a href="/Players">Players</a></li>
-          <li class="navlink"><a href="/Matches">Matches</a></li>
-          {% if not login_checker %}
-          <li style="float:right"><a class="active" href="/login">Login</a></li>
-          <li style="float:right"><a class="active" href="/signup">Signup</a></li>
-          {% elif login_checker  %} 
-          <li style="float:right">Welcome {{username}}</li>
-          <li style="float:right"><a class="active" href="/">Logout</a></li>
-          {%endif%}
         </ul>
+      </div>
+      <div class="nav-right">
+        {% if not login_checker %}
+        <span ><a class="active" href="/login">Login</a></span>
+        <span ><a class="active" href="/signup">Signup</a></span>
+        {% elif login_checker  %} 
+        <span>Welcome {{username}}</span>
+        <span><a class="active" href="/logout">Logout</a></span>
+        {%endif%}
       </div>
     </nav>
 
     <div id="container">{% block content %} {% endblock %}</div>
-
-    {% for league_name , matches in matches_data.items %}
-    <div class="container-league">
-      <div class="league_name">{{ league_name }}</div>
-      <hr />
-      {% for match in matches %}
-      <div class="match-of-day">
-        <span>{{ match.date|date:"d/m/Y" }}</span>
-        <span class="score_parent">
-          <span class="home_team">{{ match.home_team_name }} </span>
-          <span class="score">
-            {{ match.home_team_goal }} - {{match.away_team_goal }}</span
-          >
-          <span class="away_team">{{ match.away_team_name }}</span>
-        </span>
-        <span>Add favorites</span>
-      </div>
-      {% endfor %}
-    </div>
-    {% endfor %}
 
     <script>
       $(document).ready(function () {
