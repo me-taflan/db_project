@@ -1,0 +1,56 @@
+.main{
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    width: 50%;
+    background-color: transparent;
+    margin-bottom: 1rem;
+    padding: 1rem 1rem ;
+}
+
+.player{
+    padding: 0.5rem  0rem;
+    transition: background-color 0.3s ease;
+    display: flex;
+    flex-direction: row;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.player > div{
+    flex:1
+}
+
+.birthdate{
+    text-align: right;
+}
+
+.form{
+    margin: auto;
+    padding:1rem;
+}
+
+.form-input {
+    padding: 0.4rem 1rem;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 1px 1px #bbb inset;
+    outline: 0;
+    width: 25rem;
+    height: 2rem;
+    margin-right:2rem;
+}
+
+button {
+    font-size: 24px;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    
+}
+
+.fa-search {
+    color: rgb(31,128,209); 
+}

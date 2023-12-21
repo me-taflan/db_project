@@ -15,5 +15,5 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('add_favorite_match/<int:match_id>/<str:username>/', views.add_favorite_match, name='add_favorite_match'),
     path('add_favorite_team/<int:team_id>/<str:username>/', views.add_favorite_team, name='add_favorite_team'),
-    
+    path('fav_page/<str:username>/', views.fav_page, name='fav_page'),
 ]

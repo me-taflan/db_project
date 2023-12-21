@@ -12,15 +12,14 @@ def leagues(request):
     leagues = [LeagueData(row[0],row[1]) for row in rows]
     return {'leagues': leagues}
 
-def login_status(request):
-    # Initialize the variable with False by default
-    login_checker = False
 
-    # Check your custom condition for login status
+
+def login_status(request):
+    login_checker = False
     if 'username' in request.session:
         login_checker = True
         username= request.session.get('username')
     else:
         username=""
-    # Return a dictionary with the variable
+    print(login_checker)
     return {'login_checker': login_checker,'username':username}

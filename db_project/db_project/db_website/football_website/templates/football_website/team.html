@@ -1,0 +1,48 @@
+{% extends "football_website/base.html" %}
+{% load static %}
+{% block title %}EuroSoccer{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/team.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<div class="outer">
+  <div class="team-name">Team Name</div>
+  <div class="team">
+    {% for match in matches %}
+        <div class="match {% if forloop.counter|divisibleby:2 %}dark-background{% else %}light-background{% endif %}">
+          <div>{{ match.date|date:"d/m/Y" }}</div>
+          <div id="score_parent">
+            <div class="home_team"><a href= "{% url 'football_website:team_page' team_id=match.home_id %}"
+              class= "match-link">
+                  <span >{{ match.home_team_name}}</span>
+                </a> </div>
+            <div id="score-outer">
+            <a href= "{% url 'football_website:match_page' match_id=match.match_id %}"
+        class= "match-link">
+            <span class="score">{{ match.home_team_goal }} - {{match.away_team_goal }}</span>
+          </a>
+          </div>
+          <div id="away_team"><a href= "{% url 'football_website:team_page' team_id=match.away_id %}"
+            class= "match-link">
+                <span >{{ match.away_team_name}}</span>
+              </a> </div>
+        </div>
+        {% if match.team_pos == 1 and match.home_team_goal > match.away_team_goal %}
+          <div class="win" id="status">W</div>
+        {% elif match.team_pos == 2 and match.away_team_goal > match.home_team_goal %}
+          <div class="win" id="status" >W</div>
+        {% elif match.home_team_goal == match.away_team_goal %}
+          <div class="draw" id="status">D</div>
+        {% else %}
+          <div class="lose" id="status">L</div>
+        {% endif %}
+        <button class="favorite-btn" data-match-id="{{ match.match_id }}">
+          <i class="fa fa-star-o" aria-hidden="true"></i> 
+        </button>
+        </div>
+      {% endfor %}
+  </div>
+</div>
+{% endblock %}

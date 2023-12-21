@@ -1,0 +1,24 @@
+{% extends "football_website/base.html" %}
+{% load static %}
+{% block title %}EuroSoccer{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/player.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="main">
+<form method="get" action="{% url 'football_website:player_page' %}" class="form">
+    <input class='form-input'  type="text" name="search" placeholder="Search by name" value="{{ search_query }}">
+    <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
+</form>
+<div class="players">
+{% for player in players %}
+<div class="player"><span class="name"><a href="{% url 'football_website:player_info' player_id=player.id %}">{{ player.player_name }}</a></span> <span class="birthdate">-{{ player.birthday }}</span><span class="rating">-{{ player.rating }}</span> </div>
+{% endfor %}
+</div>
+
+</div>
+
+{% endblock %}
+

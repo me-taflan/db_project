@@ -113,18 +113,22 @@ nav a.active {
     margin-bottom: 1rem;
 }
 
-.nav-right{
-    margin-right: 1rem;
+.nav-div{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
-.nav-right-2{
+.nav-right{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
 }
 
-.nav-right-2 > li {
+.nav-right > span {
     margin-right: 2rem;
 }
+
+
 
