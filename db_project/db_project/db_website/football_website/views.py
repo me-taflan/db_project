@@ -529,7 +529,12 @@ def add_favorite_team(request,team_id,username):
         return JsonResponse({'success': True,'team_id':team_id})
     else:
         return JsonResponse({'success': False, 'message': 'User is not authenticated'})
-    
+
+class Team2:
+    def __init__(self,id,name):
+        self.id=id
+        self.name=name
+     
 def fav_page(request,username):
     match_select_query='''SELECT matches.*
                             FROM matches
@@ -537,7 +542,7 @@ def fav_page(request,username):
                             JOIN auth_user ON auth_user.id = favorite_matches.user_id
                             WHERE auth_user.username = %s'''
 
-    team_select_query='''SELECT team.team_long_name
+    team_select_query='''SELECT team.team_api_id,team.team_long_name
                             FROM team
                             JOIN favorite_teams ON team.team_api_id = favorite_teams.team_id
                             JOIN auth_user ON auth_user.id = favorite_teams.user_id
@@ -568,7 +573,41 @@ def fav_page(request,username):
         
     teams=[]  
     for row in team_data:
+        team=Team2(
+            id=row[0],
+            name=row[1]
+        )
         
-        teams.append(row) 
+        teams.append(team) 
         
+       
     return render(request,'football_website/fav_page.html',{'matches_data':matches,'team_data':teams})
+
+
+def remove_favorite_match(request,username, match_id):
+    query='''
+        DELETE favorite_matches
+        FROM favorite_matches
+        JOIN auth_user ON auth_user.id = favorite_matches.user_id
+        WHERE auth_user.username = %s
+        AND favorite_matches.match_id = %s;
+        '''  
+    
+    with connection.cursor() as cursor:
+        cursor.execute(query,([username],[match_id]))
+        
+    return JsonResponse({'success': True})
+
+def remove_favorite_team(request,username, team_id):
+    query='''
+        DELETE favorite_teams
+        FROM favorite_teams
+        JOIN auth_user ON auth_user.id = favorite_teams.user_id
+        WHERE auth_user.username = %s
+        AND favorite_teams.team_api_id= %s;
+        '''  
+    
+    with connection.cursor() as cursor:
+        cursor.execute(query,([username],[team_id]))
+        
+    return JsonResponse({'success': True})

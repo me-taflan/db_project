@@ -81,7 +81,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'european_soccer',
         'USER': 'root',
-        'PASSWORD': 'muhammed756',
+        'PASSWORD': 'favpagedeki problemi çöz',
         'HOST': 'localhost',
         'PORT': '3306',
     }
