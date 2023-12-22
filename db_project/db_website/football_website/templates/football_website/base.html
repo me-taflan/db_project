@@ -30,6 +30,9 @@
             </div>
           </li>
           <li class="navlink"><a href="/Players">Players</a></li>
+          {% if not login_checker %}
+          <li class="navlink"><a href="/Players">Favorites</a></li>
+          {%endif%}
         </ul>
       </div>
       <div class="nav-right">

@@ -14,7 +14,7 @@
 </form>
 <div class="players">
 {% for player in players %}
-<div class="player"><span class="name"><a href="{% url 'football_website:player_info' player_id=player.id %}">{{ player.player_name }}</a></span> <span class="birthdate">{{ player.birthday }}</span> </div>
+<div class="player"><div class="name"><a href="{% url 'football_website:player_info' player_id=player.id %}">{{ player.player_name }}</a></div> <div class="birthdate">{{ player.birthday }}</div>   <div>{{player.rating}}</div> </div>
 {% endfor %}
 </div>
 

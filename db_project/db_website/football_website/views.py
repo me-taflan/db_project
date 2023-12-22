@@ -34,7 +34,7 @@ class LeagueData:
         self.name = name
 
 class PlayerData:
-    def __init__(self,id,player_api_id,player_name,player_fifa_api_id,birthday,height,weight):
+    def __init__(self,id,player_api_id,player_name,player_fifa_api_id,birthday,height,weight,rating = None):
         self.id=id
         self.player_api_id=player_api_id
         self.player_name=player_name
@@ -42,6 +42,7 @@ class PlayerData:
         self.birthday=birthday
         self.height=height
         self.weight=weight
+        self.rating = rating
 class Player_info:
     def __init__(self,id,player_fifa_api_id,player_api_id,date,overall_rating,potential,preferred_foot,attacking_work_rate,defensive_work_rate,crossing,finishing,heading_accuracy,short_passing,volleys,dribbling,curve,free_kick_accuracy,long_passing,ball_control,acceleration,sprint_speed,agility,reactions,balance,shot_power,jumping,stamina,strength,long_shots,aggression,interceptions,positioning,vision,penalties,marking,standing_tackle,sliding_tackle,gk_diving,gk_handling,gk_kicking,gk_positioning,gk_reflexes):
         self.id=id
@@ -184,15 +185,19 @@ class MatchDetails:
         self.date = data.get('date')
         self.match_api_id = data.get('match_api_id')
         self.home_name = data.get('home_name')
+        self.home_team_id = data.get('home_team_api_id')
+        self.away_team_id = data.get('away_team_api_id')
         self.away_name = data.get('away_name')
         self.home_team_goal = data.get('home_team_goal')
         self.away_team_goal = data.get('away_team_goal')
 
         self.home_team_players = [
-            data.get(f'home_player_{i}_name') for i in range(1, 12)
-        ]
+        {'name': data.get(f'home_player_{i}_name'), 'id': data.get(f'home_player_{i}_id')}
+        for i in range(1, 12) ]
+
         self.away_team_players = [
-            data.get(f'away_player_{i}_name') for i in range(1, 12)
+            {'name': data.get(f'away_player_{i}_name'), 'id': data.get  (f'away_player_{i}_id')}
+            for i in range(1, 12)
         ]
 
         self.b365h = data.get('B365H')
@@ -240,7 +245,9 @@ def match_page(request,match_id):
     match_query = f'SELECT matches.id, matches.country_id, matches.league_id, matches.season, matches.stage,matches.date,matches.home_team_api_id, matches.away_team_api_id, matches.home_team_goal, matches.away_team_goal,matches.B365H, matches.B365D, matches.B365A,matches.BWH, matches.BWD, matches.BWA,matches.IWH, matches.IWD, matches.IWA,matches.LBH, matches.LBD, matches.LBA,matches.PSH, matches.PSD, matches.PSA,matches.WHH, matches.WHD,matches.WHA,matches.SJH, matches.SJD, matches.SJA,matches.VCH, matches.VCD, matches.VCA,matches.GBH, matches.GBD, matches.GBA,matches.BSH, matches.BSD, matches.BSA,country.name as country_name, league.name as league_name, ' \
     f't.team_long_name as home_name, t2.team_long_name as away_name, ' \
     f'{", ".join([f"h_p_{i}.player_name as {col}_name" for i, col in enumerate(player_columns_home, 1)])}, ' \
-    f'{", ".join([f"a_p_{i}.player_name as {col}_name" for i, col in enumerate(player_columns_away, 1)])} ' \
+    f'{", ".join([f"a_p_{i}.player_name as {col}_name" for i, col in enumerate(player_columns_away, 1)])}, ' \
+    f'{", ".join([f"h_p_{i}.id as {col}_id" for i, col in enumerate(player_columns_home, 1)])}, ' \
+    f'{", ".join([f"a_p_{i}.id as {col}_id" for i, col in enumerate(player_columns_away, 1)])} ' \
     f'FROM matches ' \
     f'INNER JOIN country ON matches.country_id = country.id ' \
     f'INNER JOIN league ON matches.league_id = league.id ' \
@@ -255,7 +262,7 @@ def match_page(request,match_id):
         cursor.execute(match_query)
         match_data = cursor.fetchall()
         column_names = [desc[0] for desc in cursor.description]
-
+    print(match_data)
     match_dict = dict(zip(column_names, match_data[0]))
     match_details = MatchDetails(match_dict)
 
@@ -361,8 +368,22 @@ def team_page(request,team_id):
 
 #@login_required
 def today_born_players():
-    player_query='''select id,player_name,player_fifa_api_id,date(player.birthday) as birthday from player where
-    day(current_date) = day(player.birthday) and month(current_date) = month(player.birthday); '''
+    player_query='''SELECT 
+    p.id,
+    p.player_name,
+    p.player_fifa_api_id,
+    DATE(p.birthday) AS birthday,
+    MAX(pa.overall_rating) AS max_overall_rating
+FROM 
+    player p
+JOIN 
+    player_attributes pa ON p.player_api_id = pa.player_api_id
+WHERE 
+    DAY(current_date) = DAY(p.birthday) 
+    AND MONTH(current_date) = MONTH(p.birthday)
+GROUP BY 
+    p.id, p.player_name, p.player_fifa_api_id, p.birthday;
+ '''
     
     with connection.cursor() as cursor:
         cursor.execute(player_query)
@@ -377,7 +398,8 @@ def today_born_players():
             player_fifa_api_id=row[2],
             birthday=row[3],
             height=0,
-            weight=0
+            weight=0,
+            rating = row[4],
         )
         player_data.append(player)
     return player_data

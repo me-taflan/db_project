@@ -13,7 +13,13 @@
         <div>{{ match_details.date }}</div>
     </div>
     <div class="mid-info">
-        <div>{{match_details.home_name}}</div>
+        <div> {% if match_details.home_team_api_id %}
+            <a href="{% url 'football_website:team_page' team_id=match_details.home_team_api_id %}">
+                {{ match_details.home_name|default:"Unknown" }}</a>
+            {% else %}
+            {{match_details.home_name}}
+            {% endif %} 
+            </div>
         <div class="score">
             <div>{{match_details.home_team_goal}}</div>
             <div>-</div>
@@ -24,14 +30,26 @@
 
     <div class="players">
         <div class="home-team-players">
-            {% for player_name in match_details.home_team_players%}
-            <div class="player">{{ player_name|default:"Unknown" }}</div>
+            {% for player in match_details.home_team_players%}
+            <div class="player">
+                {% if player.id %}
+                <a href="{% url 'football_website:player_info' player_id=player.id %}">{{ player.name|default:"Unknown" }}</a>
+                {% else %}
+                    {{ player.name|default:"Unknown" }}
+                {% endif %} 
+            </div>
             {% endfor %}
         </div>
         <div></div>
         <div class="away-team-players">
-            {% for player_name in match_details.away_team_players%}
-            <div class="player">{{ player_name|default:"Unknown" }}</div>
+            {% for player in match_details.away_team_players%}
+            <div class="player">
+                {% if player.id %}
+                <a href="{% url 'football_website:player_info' player_id=player.id %}">{{ player.name|default:"Unknown" }}</a>
+                {% else %}
+                    {{ player.name|default:"Unknown" }}
+                {% endif %} 
+            </div>
             {% endfor %}
         </div>
     </div>
