@@ -15,7 +15,7 @@
 }
 
 .match{
-    padding: 0.5rem  0rem;
+    padding:1rem 2rem;
     transition: background-color 0.3s ease;
     display: flex;
     flex-direction: row;
@@ -29,16 +29,7 @@
     flex:3;
     text-align: center;
 }
-.match{
-    padding: 0.5rem  0rem;
-    transition: background-color 0.3s ease;
-    display: flex;
-    flex-direction: row;
-}
 
-.match > div{
-    flex:1
-}
 
 #score_parent{
     flex:3;
@@ -107,4 +98,15 @@
 
 #league-name:hover{
   text-decoration: underline;
+}
+
+.fav{
+    font-size: 1rem;
+    border: none;
+    background-color: transparent;
+    transition: color 0.3s ease;
+}
+
+.fav:hover{
+    color: gold;
 }

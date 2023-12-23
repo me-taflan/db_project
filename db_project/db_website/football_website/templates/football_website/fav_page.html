@@ -1,0 +1,111 @@
+{% extends "football_website/base.html" %}
+
+{% load static %}
+{% block title %}EuroSoccer{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/team.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<div class="outer">
+  <div class="team-name">Favorite Matches</div>
+  <div class="team">
+    {% for match in matches_data %}
+        <div class="match {% if forloop.counter|divisibleby:2 %}dark-background{% else %}light-background{% endif %}">
+          <div>{{ match.date|date:"d/m/Y" }}</div>
+          <div id="score_parent">
+            <div class="home_team"><a href= "{% url 'football_website:team_page' team_id=match.home_id %}"
+              class= "match-link">
+                  <span >{{ match.home_team_name}}</span>
+                </a> </div>
+            <div id="score-outer">
+            <a href= "{% url 'football_website:match_page' match_id=match.match_id %}"
+        class= "match-link">
+            <span class="score">{{ match.home_team_goal }} - {{match.away_team_goal }}</span>
+          </a>
+          </div>
+          <div id="away_team"><a href= "{% url 'football_website:team_page' team_id=match.away_id %}"
+            class= "match-link">
+                <span >{{ match.away_team_name}}</span>
+              </a> </div>
+        </div>
+        <button class="rmv-match" data-match-id="{{ match.match_id }}">
+            <i class="fa fa-remove"></i>
+        </button>
+        </div>
+      {% endfor %}
+  </div>
+</div>
+
+
+<div class="outer">
+<div class="team-name">Favorite Teams</div>
+{% for team in team_data %}
+  <div class="match {% if forloop.counter|divisibleby:2 %}dark-background{% else %}light-background{% endif %}">
+    <div><a href= "{% url 'football_website:team_page' team_id=team.id %}"
+      class= "match-link">{{team.name}} </a></div>
+    <button class="rmv-team" data-team-id="{{ team.id }}">
+      <i class="fa fa-remove"></i>
+  </button>
+  </div>
+  {% endfor %}
+</div>
+
+
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('.rmv-match').click(function () {
+            var matchId = $(this).data('match-id');
+            var username = '{{ request.session.username }}';  
+            var url = '/remove_favorite_match/' + username + '/' + matchId + '/';
+            var removeButton = $(this);
+            $.post({
+                url: url,
+                data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
+                success: function () {
+                    alert('Match removed from favorites!');
+                    removeButton.closest('.match').remove();
+                    
+                },
+                error: function () {
+                    alert('Some error has occured.');
+                }
+            });
+        });
+    });
+
+    $(document).ready(function () {
+      $('.rmv-team').click(function () {
+          var teamId = $(this).data('team-id');
+          var username = '{{ request.session.username }}';  
+          var url = '/remove_favorite_team/' + username + '/' + teamId + '/';
+          var removeButton = $(this);
+          $.post({
+              url: url,
+              data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
+              success: function () {
+                  alert('Team removed from favorites!');
+                  removeButton.closest('.match').remove();
+                  
+              },
+              error: function () {
+                  alert('An error has occured.');
+              }
+          });
+      });
+  });
+  </script>
+
+
+{% endblock %}
+
+
+
+

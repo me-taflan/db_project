@@ -33,7 +33,9 @@
                 <span >{{ match.away_team_name}}</span>
               </a> </div>
         </div>
-          <div id="fav"><button class="fav" data-match-id="{{ match.match_id }}">Add to Favorites</button></div>
+          <div id="fav"><button class="fav" data-match-id="{{ match.match_id }}"><i class="fa fa-star-o" aria-hidden="true"></i></button></div>
+
+          
         </div>
       {% endfor %}
     </div>
@@ -43,16 +45,16 @@
   $(document).ready(function () {
       $('.fav').click(function () {
           var matchId = $(this).data('match-id');
-          var username = '{{ request.session.username }}';  // Assuming you set the username in the session
+          var username = '{{ request.session.username }}'; 
           var url = '/add_favorite_match/' + matchId + '/' + username + '/';
           $.post({
               url: url,
               data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
-              success: function () {
-                  alert('Match added to favorites!');
-                  // You can update the UI here if needed
+              success: function (data) {
+                alert(data.message)
               },
-              error: function () {
+              error: function (x) {
+                  console.log(x);
                   alert('Please login to add favorites.');
               }
           });

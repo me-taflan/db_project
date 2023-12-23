@@ -17,8 +17,17 @@
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-.player > span{
-    flex:1
+.player > div{
+    flex:1;
+    text-align: center;
+}
+
+.player a {
+    color:black;
+}
+
+.player a:hover{
+    text-decoration: underline;
 }
 
 .birthdate{
@@ -53,4 +62,26 @@ button {
 
 .fa-search {
     color: rgb(31,128,209); 
+}
+
+.title{
+    font-weight: bold;
+    margin: 1rem 0rem;
+    padding:1rem 1rem;
+    color: white;
+    background-color:rgb(31,128,209);
+    font-size: 2rem;
+    text-align: center;
+}
+
+.header-row{
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: row;
+}
+
+.header-row > div{
+    color:black;
+    flex:1;
+    text-align: center;
 }

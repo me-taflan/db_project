@@ -30,8 +30,8 @@
             </div>
           </li>
           <li class="navlink"><a href="/Players">Players</a></li>
-          {% if not login_checker %}
-          <li class="navlink"><a href="/Players">Favorites</a></li>
+          {% if login_checker %}
+          <li class="navlink"><a href="/fav_page/{{username}}">Favorites</a></li>
           {%endif%}
         </ul>
       </div>
@@ -40,22 +40,12 @@
         <span ><a class="active" href="/login">Login</a></span>
         <span ><a class="active" href="/signup">Signup</a></span>
         {% elif login_checker  %} 
-        <span>Welcome {{username}}</span>
+        <span class="name">{{username}}</span>
         <span><a class="active" href="/logout">Logout</a></span>
         {%endif%}
       </div>
     </nav>
 
     <div id="container">{% block content %} {% endblock %}</div>
-
-    <script>
-      $(document).ready(function () {
-        $("[href]").each(function () {
-          if (this.href == window.location.href) {
-            $(this).addClass("active");
-          }
-        });
-      });
-    </script>
   </body>
 </html>

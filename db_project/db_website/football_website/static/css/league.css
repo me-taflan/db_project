@@ -49,3 +49,14 @@ td a {
 .team-table a:hover {
     text-decoration: underline;
 }
+
+.fav{
+    font-size: 1rem;
+    border: none;
+    background-color: transparent;
+    transition: color 0.3s ease;
+}
+
+.fav:hover{
+    color: gold;
+}

@@ -4,7 +4,6 @@ class LeagueData:
     def __init__(self,sid,name):
         self.id = sid
         self.name = name
-
 def leagues(request):
     with connection.cursor() as cursor:
         cursor.execute("SELECT id,name FROM league")
@@ -13,13 +12,13 @@ def leagues(request):
     return {'leagues': leagues}
 
 
-
 def login_status(request):
     login_checker = False
     if 'username' in request.session:
         login_checker = True
-        username= request.session.get('username')
+        username = request.session.get('username')
     else:
         username=""
-    print(login_checker)
     return {'login_checker': login_checker,'username':username}
+
+

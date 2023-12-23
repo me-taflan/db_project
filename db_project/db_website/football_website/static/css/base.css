@@ -60,7 +60,7 @@ nav ul li:not(:first-child):not(:last-child)::after {
 }
 
 nav ul li a{
-    color: rgba(255, 255, 255);;
+    color: rgba(255, 255, 255);
     font-size: 1.1rem; 
     text-decoration: none;
     opacity: 0.5;
@@ -71,12 +71,6 @@ nav ul li a:hover {
     opacity: 1;
 }
 
-nav a.active {
-    opacity: 1;
-    font-weight: bold;
-    border:4px solid rgb(255,129,0);
-    border-width: 0 0 2px 0;
-}
 
 
 .dropdown-content {
@@ -128,6 +122,21 @@ nav a.active {
 
 .nav-right > span {
     margin-right: 2rem;
+}
+
+.active{
+    text-decoration: none;
+    color: white;
+    opacity: 0.5;
+    transition: opacity 0.3s
+}
+
+.active:hover{
+    opacity: 1;
+}
+
+.name{
+    color: white; 
 }
 
 

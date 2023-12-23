@@ -114,3 +114,15 @@ a{
   #league-name:hover{
     text-decoration: underline ;
   }
+
+
+  .rmv-match{
+    flex:1;
+    background-color: transparent;
+    font-size: 1rem;
+    border: none;
+  }
+
+  .rmv-match:hover{
+    color: red;
+  }

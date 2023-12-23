@@ -1,15 +1,7 @@
 from django.shortcuts import render
 from django.db import connection
-from collections import defaultdict
-#from django.contrib.auth import login
-#from django.contrib.auth import views as auth_views
-from .forms import UserCreationForm
 from django.shortcuts import redirect, render
-from django.views.generic import CreateView
 from .forms import LoginForm,SignUpForm
-from django.contrib.auth import views as auth_views
-#from django.contrib.auth.decorators import login_required
-from django.urls import reverse
 from django.http import JsonResponse 
 
 
@@ -93,7 +85,7 @@ class Player_info:
 def LoginView(request):
     login_checker=False
     if request.method == 'POST':
-        form=LoginForm(request.POST)
+        form = LoginForm(request.POST)
         if form.is_valid():
             username=form.cleaned_data['username']
             password=form.cleaned_data['password']
@@ -102,7 +94,7 @@ def LoginView(request):
                 cursor.execute(auth_query,([username],[password]))
                 user=cursor.fetchone()
             if user is not None:
-                request.session['username']=username
+                request.session['username'] = username
                 login_checker=True
                 return redirect('football_website:main_page')
             else:
@@ -399,7 +391,7 @@ GROUP BY
             birthday=row[3],
             height=0,
             weight=0,
-            rating = row[4],
+            rating=row[4]
         )
         player_data.append(player)
     return player_data
@@ -407,19 +399,35 @@ GROUP BY
 #@login_required
 def search_players_by_name(name):
     with connection.cursor() as cursor:
-        query = "SELECT * FROM player WHERE player_name LIKE %s"
+        query = '''SELECT 
+    p.id,
+    p.player_name,
+    p.player_fifa_api_id,
+    DATE(p.birthday) AS birthday,
+    MAX(pa.overall_rating) AS max_overall_rating
+FROM 
+    player p
+JOIN 
+    player_attributes pa ON p.player_api_id = pa.player_api_id
+WHERE 
+    p.player_name LIKE %s
+GROUP BY 
+    p.id, p.player_name, p.player_fifa_api_id, p.birthday;
+'''
+
         cursor.execute(query, ['%' + name + '%'])
         player_rows = cursor.fetchall()
         player_data=[]
     for row in player_rows:
         player = PlayerData(
-            id=0,
+            id=row[0],
             player_api_id=0,
-            player_name=row[0],
-            player_fifa_api_id=row[1],
-            birthday=row[2],
+            player_name=row[1],
+            player_fifa_api_id=row[2],
+            birthday=row[3],
             height=0,
-            weight=0
+            weight=0,
+            rating=row[4]
         )
         player_data.append(player)
     return player_data
@@ -499,27 +507,134 @@ def player_info_page(request,player_id):
 def add_favorite_match(request,match_id,username):
     if 'username' in request.session:
         user_query='''select id from auth_user where username=%s '''
-        query='''insert into favorite_matches(user_id,match_id) values(%s,%s)'''
+        query_first = '''
+                SELECT f.*
+                FROM favorite_matches f
+                WHERE f.match_id = %s and f.user_id  = %s
+                '''
+        
+        query='''insert ignore into favorite_matches (user_id,match_id) values(%s,%s)'''
         with connection.cursor() as cursor:
             cursor.execute(user_query,[username])
             user_id=cursor.fetchone()
-            cursor.execute(query,([user_id],[match_id]))
-        return JsonResponse({'success': True,'match_id':match_id})
+
+            cursor.execute(query_first,([match_id],[user_id]))
+            result = cursor.fetchall()
+
+            if result:
+                return JsonResponse({'success': False, 'message': 'Match already added!'})
+            else:
+                cursor.execute(query,([user_id],[match_id]))
+                return JsonResponse({'success': True,'match_id':match_id , 'message':'Added to Favorites'})
+        
     else:
         return JsonResponse({'success': False, 'message': 'User is not authenticated'})
     
 def add_favorite_team(request,team_id,username):
     if 'username' in request.session:
         user_query='''select id from auth_user where username=%s '''
+        query_first = '''
+                SELECT f.*
+                FROM favorite_teams f
+                WHERE f.team_id = %s and f.user_id  = %s
+                '''
         query='''insert into favorite_teams(user_id,team_id) values(%s,%s)'''
         with connection.cursor() as cursor:
             cursor.execute(user_query,[username])
             user_id=cursor.fetchone()
-            cursor.execute(query,([user_id],[team_id]))
-        return JsonResponse({'success': True,'team_id':team_id})
+
+            cursor.execute(query_first,([team_id],[user_id]))
+            result = cursor.fetchall()
+            if result:
+                return JsonResponse({'success': False, 'message': 'Team already added!'})
+            else :
+                cursor.execute(query,([user_id],[team_id]))
+                return JsonResponse({'success': True,'team_id':team_id,'message':'Added to Favorites'})
     else:
         return JsonResponse({'success': False, 'message': 'User is not authenticated'})
-    
+
+class Team2:
+    def __init__(self,id,name):
+        self.id=id
+        self.name=name
+     
 def fav_page(request,username):
-    match_select_query='''select * from favor '''
+    match_select_query='''SELECT  m.id , m.date , m. season , m.stage ,
+                            m.home_team_goal,m.away_team_goal, t1.team_long_name , t2.team_long_name,l.name , l.id , t1.team_api_id, t2.team_api_id
+                            FROM matches m
+                            JOIN favorite_matches ON m.id = favorite_matches.match_id
+                            JOIN auth_user ON auth_user.id = favorite_matches.user_id
+                            JOIN team t1 ON m.home_team_api_id = t1.team_api_id JOIN team t2 ON m.away_team_api_id = t2.team_api_id
+                            JOIN league l ON l.id = m.league_id
+                            WHERE auth_user.username = %s'''
+
+    team_select_query='''SELECT team.team_api_id,team.team_long_name
+                            FROM team
+                            JOIN favorite_teams ON team.team_api_id = favorite_teams.team_id
+                            JOIN auth_user ON auth_user.id = favorite_teams.user_id
+                            WHERE auth_user.username = %s '''
+                            
+    with connection.cursor() as cursor:
+        cursor.execute(match_select_query,[username])
+        match_data=cursor.fetchall()
+        cursor.execute(team_select_query,[username])
+        team_data=cursor.fetchall()
+        
+    matches = []
+    print(match_data)
+    for row in match_data:
+        match = MatchData(
+            match_id=row[0],
+            date=row[1],
+            season=row[2],
+            stage=row[3],
+            home_team_goal=row[4],
+            away_team_goal=row[5],
+            home_team_name=row[6],
+            away_team_name=row[7],
+            league_name=row[8],
+            league_id=row[9],
+            home_id=row[10],
+            away_id=row[11],
+        )
+        matches.append(match)  
+        
+    teams=[]  
+    for row in team_data:
+        team=Team2(
+            id=row[0],
+            name=row[1]
+        )
+        
+        teams.append(team) 
+        
+       
+    return render(request,'football_website/fav_page.html',{'matches_data':matches,'team_data':teams})
+
+
+def remove_favorite_match(request,username, match_id):
+    query='''
+        DELETE favorite_matches
+        FROM favorite_matches
+        JOIN auth_user ON auth_user.id = favorite_matches.user_id
+        WHERE auth_user.username = %s
+        AND favorite_matches.match_id = %s;
+        '''  
     
+    with connection.cursor() as cursor:
+        cursor.execute(query,([username],[match_id]))
+        
+    return JsonResponse({'success': True})
+
+def remove_favorite_team(request,username, team_id):
+    query='''
+        DELETE favorite_teams
+        FROM favorite_teams
+        JOIN auth_user ON auth_user.id = favorite_teams.user_id
+        WHERE auth_user.username = %s
+        AND favorite_teams.team_id= %s;
+        '''  
+    with connection.cursor() as cursor:
+        cursor.execute(query,([username],[team_id]))
+        
+    return JsonResponse({'success': True})

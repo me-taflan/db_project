@@ -1,0 +1,82 @@
+<!--
+
+{% block content %}
+      {% for match in matches_data %}
+        <div class="match {% if forloop.counter|divisibleby:2 %}dark-background{% else %}light-background{% endif %}">
+          <div>{{ match.date|date:"d/m/Y" }}</div>
+          <div id="score_parent">
+            <div class="home_team"><a href= "{% url 'football_website:team_page' team_id=match.home_id %}"
+              class= "match-link">
+                  <span >{{ match.home_team_name}}</span>
+                </a> </div>
+            <div id="score-outer">
+            <a href= "{% url 'football_website:match_page' match_id=match.match_id %}"
+        class= "match-link">
+            <span class="score">{{ match.home_team_goal }} - {{match.away_team_goal }}</span>
+          </a>
+          </div>
+          <div id="away_team"><a href= "{% url 'football_website:team_page' team_id=match.away_id %}"
+            class= "match-link">
+                <span >{{ match.away_team_name}}</span>
+              </a> </div>
+        </div>
+          <div id="fav"><button class="fav" data-match-id="{{ match.match_id }}">Remove From Favorites</button></div>
+        </div>
+      {% endfor %}
+
+        {% for team in teams %}
+            <p>{{team.name}}</p>
+                <tr class="{% if forloop.counter|divisibleby:2 %}light-background{% else %}dark-background{% endif %}">
+                    <td>{{ forloop.counter }}</td>
+                    <td><a href="{% url 'football_website:team_page' team_id=team.id %}">{{ team.name }}</a></td>
+                    <td><button class="fav" data-team-id="{{ team.id }}">Remove From Favorites</button></td>
+                </tr>
+        {% endfor %}
+
+      <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+  $(document).ready(function () {
+      $('.fav').click(function () {
+          var matchId = $(this).data('match-id');
+          var username = '{{ request.session.username }}';  
+          var url = '/remove_favorite_match/' + username + '/' + matchId + '/';
+          $.post({
+              url: url,
+              data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
+              success: function () {
+                  alert('Match removed from favorites!');
+                  
+              },
+              error: function () {
+                  alert('Some error has occured.');
+              }
+          });
+      });
+  });
+</script>  
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+  $(document).ready(function () {
+      $('.fav').click(function () {
+          var teamId = $(this).data('team-id');
+          var username = '{{ request.session.username }}';  
+          var url = '/remove_favorite_team/' + username + '/' + teamId + '/';
+          $.post({
+              url: url,
+              data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
+              success: function () {
+                  alert('Team removed from favorites!');
+                  
+              },
+              error: function () {
+                  alert('An error has occured.');
+              }
+          });
+      });
+  });
+</script>
+    </div>
+</div>
+
+{% endblock %}
+-->

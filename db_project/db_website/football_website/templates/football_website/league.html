@@ -22,7 +22,7 @@
                 <th>A</th>
                 <th>Pts</th>
                 <th>Avg Pts</th>
-                <th>Actions</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -37,7 +37,7 @@
                     <td>{{ team.goals_conceded }}</td>
                     <td>{{ team.points }}</td>
                     <td>{{ team.avg_points }}</td>
-                    <td><button class="fav" data-team-id="{{ team.id }}">Add to Favorites</button></td>
+                    <td><button class="fav" data-team-id="{{ team.id }}"><i class="fa fa-star-o" aria-hidden="true"></i></button></td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -47,14 +47,13 @@
   $(document).ready(function () {
       $('.fav').click(function () {
           var teamId = $(this).data('team-id');
-          var username = '{{ request.session.username }}';  // Assuming you set the username in the session
+          var username = '{{ request.session.username }}';  
           var url = '/add_favorite_team/' + teamId + '/' + username + '/';
           $.post({
               url: url,
               data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
-              success: function () {
-                  alert('Team added to favorites!');
-                  // You can update the UI here if needed
+              success: function (data) {
+                  alert(data.message);
               },
               error: function () {
                   alert('Please login to add favorites.');
@@ -63,4 +62,5 @@
       });
   });
 </script>
+
 {% endblock %}
