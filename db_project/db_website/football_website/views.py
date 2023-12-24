@@ -100,15 +100,12 @@ def LoginView(request):
             else:
                 return redirect('football_website:login')
     else:
-       # GET request or form is invalid
        form = LoginForm()
        return render(request, 'registration/login.html', {'form': form})
 
 
 def logout(request):
-    # Clear the relevant session data
     request.session.pop('username', None)
-    # Redirect to the desired page after logout
     return redirect('football_website:main_page')
 
 def signup(request):
@@ -305,7 +302,6 @@ def league_page(request,league_id):
         cursor.execute(f'SELECT league.id,league.name,country.name FROM league JOIN country on country.id = league.country_id WHERE league.id={league_id} ')
         rows2 = cursor.fetchall()
 
-
     teams = [Team(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8])for row in rows]
     return render(request,'football_website/league.html',{'teams':teams, 'league':LeagueData(rows2[0][0],rows2[0][1]) , 'country_name':rows2[0][2]})
 
@@ -342,7 +338,7 @@ def team_page(request,team_id):
     return render(request,'football_website/team.html',{'matches':matches,'team_long' : rows2[0][0],'team_short':rows2[0][1]})
 
 
-#@login_required
+
 def today_born_players():
     player_query='''SELECT 
     p.id,
@@ -380,7 +376,7 @@ GROUP BY
         player_data.append(player)
     return player_data
     
-#@login_required
+
 def search_players_by_name(name):
     with connection.cursor() as cursor:
         query = '''SELECT 
@@ -416,7 +412,7 @@ GROUP BY
         player_data.append(player)
     return player_data
 
-#@login_required
+
 def player_page(request):
     if 'search' in request.GET:
         search_query = request.GET['search']
@@ -426,7 +422,7 @@ def player_page(request):
         players = today_born_players()
         return render(request, 'football_website/player_page.html', {'players': players})
     
-#@login_required
+
 def player_info_page(request,player_id):
     with connection.cursor() as cursor:
         player_query='''SELECT pa.*

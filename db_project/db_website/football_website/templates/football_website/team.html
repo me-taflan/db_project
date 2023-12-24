@@ -38,11 +38,33 @@
         {% else %}
           <div class="lose" id="status">L</div>
         {% endif %}
-        <button class="favorite-btn" data-match-id="{{ match.match_id }}">
+        <button class="fav" data-match-id="{{ match.match_id }}">
           <i class="fa fa-star-o" aria-hidden="true"></i> 
         </button>
         </div>
       {% endfor %}
   </div>
 </div>
+
+
+<script>
+  $(document).ready(function () {
+      $('.fav').click(function () {
+          var matchId = $(this).data('match-id');
+          var username = '{{ request.session.username }}'; 
+          var url = '/add_favorite_match/' + matchId + '/' + username + '/';
+          $.post({
+              url: url,
+              data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
+              success: function (data) {
+                alert(data.message)
+              },
+              error: function (x) {
+                  console.log(x);
+                  alert('Please login to add favorites.');
+              }
+          });
+      });
+  });
+</script>
 {% endblock %}

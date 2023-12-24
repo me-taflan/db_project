@@ -102,7 +102,7 @@ a{
     margin-right:0.5rem;
   }
 
-  .favorite-btn{
+  .fav{
     padding:0rem 0.5rem;
   }
 
@@ -132,6 +132,7 @@ a{
     background-color: transparent;
     font-size: 1rem;
     border: none;
+    text-align: right;
   }
 
   .rmv-match:hover{
@@ -149,3 +150,14 @@ a{
   .rmv-team:hover{
     color: red;
   }
+
+  .fav{
+    font-size: 1rem;
+    border: none;
+    background-color: transparent;
+    transition: color 0.3s ease;
+}
+
+.fav:hover{
+    color: gold;
+}
