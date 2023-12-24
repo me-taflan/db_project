@@ -123,13 +123,12 @@ def signup(request):
              '''
             with connection.cursor() as cursor:
                 cursor.execute(user_creation_query,([username],[email],[password],[0]))
-            
-            return redirect('football_website:main_page')  # Replace 'home' with the desired redirect path after signup
+            return redirect('football_website:main_page') 
     else:
         form = SignUpForm()
     return render(request, 'registration/signup.html', {'form': form})
 
-#@login_required
+
 def main_page(request):
     matches_query = '''SELECT m.id , m.date , m. season , m.stage ,m.home_team_goal,m.away_team_goal, t1.team_long_name , t2.team_long_name ,l.name , l.id , t1.team_api_id, t2.team_api_id, m.league_id FROM matches m join team t1 on m.home_team_api_id = t1.team_api_id JOIN team t2 on m.away_team_api_id = t2.team_api_id 
     JOIN league l on l.id = m.league_id
@@ -138,8 +137,6 @@ def main_page(request):
 
 
     with connection.cursor() as cursor:
-        cursor.execute("SELECT id,name FROM league")
-        rows = cursor.fetchall()
         cursor.execute(matches_query)
         match_rows = cursor.fetchall()
 
@@ -233,7 +230,6 @@ def match_page(request,match_id):
     player_joins_home = ' '.join([f'LEFT JOIN player h_p_{i} ON h_p_{i}.player_api_id = matches.{col}' for i,col in enumerate(player_columns_home,1)])
     player_joins_away = ' '.join([f'LEFT JOIN player a_p_{i} ON a_p_{i}.player_api_id = matches.{col}' for i,col in enumerate(player_columns_away,1)])
     
-    # this query sucks ???? optimization ????
     match_query = f'SELECT matches.id, matches.country_id, matches.league_id, matches.season, matches.stage,matches.date,matches.home_team_api_id, matches.away_team_api_id, matches.home_team_goal, matches.away_team_goal,matches.B365H, matches.B365D, matches.B365A,matches.BWH, matches.BWD, matches.BWA,matches.IWH, matches.IWD, matches.IWA,matches.LBH, matches.LBD, matches.LBA,matches.PSH, matches.PSD, matches.PSA,matches.WHH, matches.WHD,matches.WHA,matches.SJH, matches.SJD, matches.SJA,matches.VCH, matches.VCD, matches.VCA,matches.GBH, matches.GBD, matches.GBA,matches.BSH, matches.BSD, matches.BSA,country.name as country_name, league.name as league_name, ' \
     f't.team_long_name as home_name, t2.team_long_name as away_name, ' \
     f'{", ".join([f"h_p_{i}.player_name as {col}_name" for i, col in enumerate(player_columns_home, 1)])}, ' \
@@ -254,7 +250,6 @@ def match_page(request,match_id):
         cursor.execute(match_query)
         match_data = cursor.fetchall()
         column_names = [desc[0] for desc in cursor.description]
-    print(match_data)
     match_dict = dict(zip(column_names, match_data[0]))
     match_details = MatchDetails(match_dict)
 
@@ -316,28 +311,17 @@ def league_page(request,league_id):
 
 
 
-def team_page(request,team_id):
-    
+def team_page(request,team_id): 
     # Get all matches and extract some stats for the current team
-    query = f'''SELECT m.id , m.date , m. season , m.stage ,m.home_team_goal, m.away_team_goal, t1.team_long_name , t2.team_long_name,t1.team_api_id, t2.team_api_id , CASE WHEN m.home_team_api_id = {team_id} THEN 1 WHEN m.away_team_api_id = {team_id} THEN 2 END AS team_pos FROM matches m JOIN team t1 ON m.home_team_api_id = t1.team_api_id JOIN team t2 ON m.away_team_api_id = t2.team_api_id  WHERE m.home_team_api_id = {team_id} OR m.away_team_api_id = {team_id};'''
+    query = f'''SELECT m.id , m.date , m. season , m.stage ,m.home_team_goal, m.away_team_goal, t1.team_long_name , t2.team_long_name,t1.team_api_id, t2.team_api_id , CASE WHEN m.home_team_api_id = {team_id} THEN 1 WHEN m.away_team_api_id = {team_id} THEN 2 END AS team_pos FROM matches m JOIN team t1 ON m.home_team_api_id = t1.team_api_id JOIN team t2 ON m.away_team_api_id = t2.team_api_id  WHERE m.home_team_api_id = {team_id} OR m.away_team_api_id = {team_id} ORDER BY m.date ASC;'''
 
-    # Need to extract some statistics
-    # Team Players
-    player_columns_home = [f'home_player_{i}' for i in range(1, 12)]
-    player_columns_away = [f'away_player_{i}' for i in range(1, 12)]
-
-    player_joins_home = ' '.join([f'LEFT JOIN player h_p_{i} ON h_p_{i}.player_api_id = matches.{col}' for i,col in enumerate(player_columns_home,1)])
-    player_joins_away = ' '.join([f'LEFT JOIN player a_p_{i} ON a_p_{i}.player_api_id = matches.{col}' for i,col in enumerate(player_columns_away,1)])
-
-    players_query = 'SELECT player.player_api_id , COUNT(*) AS total_appearances FROM matches m '\
-    f'{player_joins_home} '\
-    f'{player_joins_away} '\
-    f' WHERE m.home_team_api_id = {team_id} '\
-    f' OR m.away_team_api_id = {team_id} GROUP BY players.player_id, players.player_name; '
-
+    query_2 = f''' SELECT t.team_long_name, t.team_short_name FROM team t WHERE t.team_api_id = {team_id} '''
+                
     with connection.cursor() as cursor:
         cursor.execute(query)
         rows = cursor.fetchall()
+        cursor.execute(query_2)
+        rows2 = cursor.fetchall()
         
     matches = []
     for row in rows:
@@ -355,7 +339,7 @@ def team_page(request,team_id):
             team_pos=row[10],
             )
         matches.append(match)    
-    return render(request,'football_website/team.html',{'matches':matches})
+    return render(request,'football_website/team.html',{'matches':matches,'team_long' : rows2[0][0],'team_short':rows2[0][1]})
 
 
 #@login_required

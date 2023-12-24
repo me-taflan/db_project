@@ -126,3 +126,26 @@ a{
   .rmv-match:hover{
     color: red;
   }
+
+  .rmv-match{
+    flex:1;
+    background-color: transparent;
+    font-size: 1rem;
+    border: none;
+  }
+
+  .rmv-match:hover{
+    color: red;
+  }
+
+  .rmv-team{
+    flex:1;
+    background-color: transparent;
+    font-size: 1rem;
+    border: none;
+    text-align:right;
+  }
+
+  .rmv-team:hover{
+    color: red;
+  }
